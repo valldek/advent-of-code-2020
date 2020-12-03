@@ -10,21 +10,16 @@ const callback = (err, data) => {
             const range = item[0].split('-').map(val => val - 1);
             const character = item[1][0];
             const testString = item[2];
-            let correct = false;
-
-            if (testString[range[0]] === character && testString[range[1]] !== character) {
-                correct = true;
-            } else if (testString[range[0]] !== character && testString[range[1]] === character)  {
-                correct = true;
-            } else {
-                correct = false
-            }
-
-            return correct;
             
+            if (testString[range[0]] === character && testString[range[1]] !== character) {
+                return true;
+            } else if (testString[range[0]] !== character && testString[range[1]] === character)  {
+                return true;
+            } else {
+                return false;
+            }
         })
         .length;
-
 
     console.log(dataArrStr);
 }
