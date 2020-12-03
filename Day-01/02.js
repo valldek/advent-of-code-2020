@@ -3,7 +3,7 @@ const path = require('path');
 
 
 const dataRead = (err, data) => {
-    if (err) throw error;
+    if (err) throw err;
     let response;
 
     const dataArrNum = data.split('\n').map(value => +value);
