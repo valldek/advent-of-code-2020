@@ -7,18 +7,21 @@ const callback = (err, data) => {
     const dataArrStr = data.trim().split('\n')
         .map(val => val.split(' '))
         .filter(item => {
-            const range = item[0].split('-').map(val => +val);
+            const range = item[0].split('-').map(val => val - 1);
             const character = item[1][0];
-            const testString = ' ' + item[2];
+            const testString = item[2];
+            let correct = false;
 
-            // const regex = new RegExp("[^" + character +"]", "g");
-            // const testStringWithout = testString.replace(regex, '');
+            if (testString[range[0]] === character && testString[range[1]] !== character) {
+                correct = true;
+            } else if (testString[range[0]] !== character && testString[range[1]] === character)  {
+                correct = true;
+            } else {
+                correct = false
+            }
+
+            return correct;
             
-            // return testStringWithout.length >= range[0] && testStringWithout.length <= range[1];
-
-            return testString[range[0]] === character 
-                ? testString[range[1]] !== character 
-                : testString[range[1]] !== character      
         })
         .length;
 
