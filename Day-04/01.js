@@ -5,4 +5,4 @@ const callback = (err, data) => {
     console.log(data);
 }
 
-fs.readFile(path.join(__dirname, input), 'utf-8', callback);
+fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
