@@ -5,6 +5,7 @@ const path = require('path');
 const callback = (err, data) => {
     if (err) throw err;
 
+    const bagMap = {};
     const bags = data.split('\n')
         .map(rule => {
             const [outer, inner] = rule.split(' bags contain ');
@@ -16,15 +17,16 @@ const callback = (err, data) => {
                 })
                 .filter(innerBag => innerBag);
 
-            return {
+            bagMap[color] = {
                 color,
                 innerBags
            }
         });
     
-    const output = canContainColor(bags, 'shiny gold');
+    // const output = canContainColor(bags, 'shiny gold');
+    const output = findHowMany(bagMap, 'shiny gold');
 
-    console.log(output.length);
+    console.log(output);
 }
 
 const getBagColor = (innerBagStr) => {
@@ -39,25 +41,13 @@ const getBagColor = (innerBagStr) => {
     }
 }
 
-const canContainColor = (bags, bagColor) => {
-    let contain = [];
-    let childContain = bags.filter(bag => 
-        bag.innerBags.some( innerBag => 
-            innerBag.color === bagColor
-        )    
-    );
+const findHowMany = (bagMap, color) => {
+    const root = bagMap[color];
 
-    contain = contain.concat(childContain);
-
-    childContain.forEach(childBag => {
-        const nestedBag = canContainColor(bags, childBag.color)
-        if (nestedBag && nestedBag.length) {
-            contain = contain.concat(nestedBag);
-        }
-    });
-
-    return [...new Set(contain)];;
-
+    return root.innerBags.reduce((acc, cur) => {
+        const innerAmmount = findHowMany(bagMap, cur.color);
+        return acc + cur.ammount + cur.ammount * innerAmmount;
+    }, 0)
 }
 
 fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
