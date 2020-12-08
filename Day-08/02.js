@@ -3,12 +3,14 @@ const path = require('path');
 
 const callback = (err, data) => {
     if (err) throw err;
-    
+
     const dataArr = data.split('\n');
     const dataArrSize = dataArr.length;
-    const dataMtrx = [];
+
+    let output = 0;
 
     for (let i = 0; i < dataArr.length; i++) {
+        let response = [];
         const tmpDataArr = [...dataArr];
         const [instruction, operation] = tmpDataArr[i].split(' ');
 
@@ -18,12 +20,14 @@ const callback = (err, data) => {
             continue
         }
 
-        console.log((checkIfCorrect(tmpDataArr, dataArrSize)));
+        response = (checkIfCorrect(tmpDataArr, dataArrSize));
 
+        if (response[0]) {
+            output = response[1];
+        }
     }
 
-    // console.log(dataMtrx[1], dataMtrx[5]);
-
+    console.log(output);
 }
 
 function checkIfCorrect(arr, termination) {
