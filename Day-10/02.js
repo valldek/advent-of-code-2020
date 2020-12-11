@@ -4,37 +4,34 @@ const path = require('path');
 const callback = (err, data) => {
     if (err) throw err;
 
-    const output = {
-        '3': 1
-    };
-
-    dataArrSorted = data.split('\n')
+    const dataArrSorted = data.split('\n')
         .map(val => parseInt(val, 10))
         .sort((a, b) => a - b);
     
-    let cache = {};
+    const cache = {};
 
-    console.log(findWays(0, cache))
+    const output = findWays(0, dataArrSorted, cache);
+    console.log(output);
 }
 
-const findWays = (i, cache) => {
-    if (i === dataArrSorted.length - 1) {
+const findWays = (start, arr, cache) => {
+    if (start === arr.length - 1) {
         return 1;
     }
 
-    if (i in cache) {
-        return cache[i];
+    if (start in cache) {
+        return cache[start];
     }
 
     let answer = 0;
 
-    for (let j = i + 1; j < dataArrSorted.length; j++) {
-        if (dataArrSorted[j] - dataArrSorted[i] <= 3) {
-            answer += findWays(j, cache);
+    for (let j = start + 1; j < arr.length; j++) {
+        if (arr[j] - arr[start] <= 3) {
+            answer += findWays(j, arr, cache);
         }
     }
 
-    cache[i] = answer;
+    cache[start] = answer;
 
     return answer
 }
