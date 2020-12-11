@@ -14,31 +14,31 @@ const callback = (err, data) => {
     
     let levelToChek = [0];
     let out = [];
+    let cache = {};
 
-    for (let j = 0; j < dataArrSorted.length; j++) {
-        levelToChek = findNextLevel(dataArrSorted, levelToChek);
-        console.log(j, levelToChek);
-    }
-
-    console.log(levelToChek.length);
+    console.log(findWays(0, cache))
 }
 
-const findNextLevel = (arr, current) => {
-    const last = arr[arr.length - 1];
-    let nextLevel = [];
-    for (let i = 0; i < current.length; i++) {
-        const currentIndex = arr.indexOf(current[i]);
-        if (currentIndex === -1) continue;
-        if (current[i] === last) nextLevel.push(current[i]);
-        const next = arr
-            .slice(currentIndex + 1, currentIndex + 4)
-            .filter(val => {
-                return val <= current[i] + 3;
-            });
-        nextLevel.push(...next);
+const findWays = (i, cache) => {
+    if (i === dataArrSorted.length - 1) {
+        return 1;
     }
 
-    return nextLevel;
+    if (i in cache) {
+        return cache[i];
+    }
+
+    let answer = 0;
+
+    for (let j = i + 1; j < dataArrSorted.length; j++) {
+        if (dataArrSorted[j] - dataArrSorted[i] <= 3) {
+            answer += findWays(j, cache);
+        }
+    }
+
+    cache[i] = answer;
+
+    return answer
 }
 
 const task = fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
