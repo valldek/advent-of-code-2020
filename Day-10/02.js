@@ -12,8 +12,6 @@ const callback = (err, data) => {
         .map(val => parseInt(val, 10))
         .sort((a, b) => a - b);
     
-    let levelToChek = [0];
-    let out = [];
     let cache = {};
 
     console.log(findWays(0, cache))
