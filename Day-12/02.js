@@ -14,52 +14,62 @@ const callback = (err, data) => {
     const output = dataMtrx.reduce((acc, cur) => {
         console.log(acc, cur);
         return acc = navigateShip(acc, cur);
-    }, ['E', 0, 0]);
+    //  way    ship
+    }, [10, 1, 0, 0]);
 
     console.log(output);
-    console.log(Math.abs(output[1]) + Math.abs(output[2]));
+    console.log(Math.abs(output[2]) + Math.abs(output[3]));
 }
 
 const navigateShip = (prev, current) => {
-    let directionIndex = 0;
-    let newDirectionIndex = 0;
-    let newDirection = '';
-
-    const directions = ['E', 'S', 'W', 'N'];
     switch(current[0]) {
         case 'N':
-            prev[2] += current[1];
-            break;
-        case 'S':
-            prev[2] -= current[1];
-            break;
-        case 'E':
             prev[1] += current[1];
             break;
-        case 'W':
+        case 'S':
             prev[1] -= current[1];
             break;
-        case 'L':
-            directionIndex = directions.indexOf(prev[0]);
-            newDirectionIndex = (directionIndex - current[1] / 90)     //1 2 3 4
-            if ( newDirectionIndex < 0) {
-                newDirectionIndex += directions.length;
-            }
-            newDirection = directions[newDirectionIndex];
-            prev[0] = newDirection;
+        case 'E':
+            prev[0] += current[1];
             break;
-        case 'R':
-            directionIndex = directions.indexOf(prev[0]);
-            newDirectionIndex = (directionIndex + current[1] / 90)     //1 2 3 4
-            if ( newDirectionIndex > directions.length - 1) {
-                newDirectionIndex -= directions.length;
-            }
-            newDirection = directions[newDirectionIndex];
-            prev[0] = newDirection;
+        case 'W':
+            prev[0] -= current[1];
             break;
         case 'F':
-            navigateShip(prev, [prev[0], current[1]]);
+            prev = moveShipForard(prev, current);
+            break;
+        case 'L':
+        case 'R':
+            prev = rotateWaypoint(prev, current);
+            break;
     }
+    return prev;
+}
+
+const rotateWaypoint = (prev, current) => {
+    let angle = current[1];
+    const side = current[0];
+
+    const [wx, wy, sx, sy] = prev;
+    const rotation = {
+        '90': [wy, -wx, sx, sy],
+        '180': [-wx, -wy, sx, sy],
+        '270': [-wy, wx, sx, sy]
+    }
+
+    if (side === 'L') {
+        angle = 360 - angle;
+    }
+
+    return rotation[angle];
+}
+
+const moveShipForard = (prev, current) => {
+    const ammount = current[1];
+
+    prev[2] += ammount * prev[0];
+    prev[3] += ammount * prev[1];
+
     return prev;
 }
 
