@@ -13,8 +13,6 @@ const callback = (err, data) => {
     const shortestIndex = timeToWait.indexOf(shortest);
     const bus = busInService[shortestIndex];
 
-    console.log(shortest, shortestIndex, busInService, bus);
-
     const output = shortest * bus;
 
     console.log(output);
