@@ -5,22 +5,43 @@ const callback = (err, data) => {
     if (err) throw err;
 
     const dataArr = data.split('\n');
+    let mem = {};
     let mask = 0;
-    const memory = dataArr.reduce((acc, cur) => {
-        if (cur.match('mask')) {
-            mask = extractMask(cur);
-            acc = {...acc};
+    let floatingBitsCount = 0;
+    let combinations = 0;
+    console.log(combination(2));
+    console.log(combination(3));
+    console.log(combination(4));
+
+    dataArr.forEach(line => {
+        if (/mask/.test(line)) {
+            mask = extractMask(line);
+            floatingBitsCount = mask.split('').filter(val => val === 'X').length;
+            combinations = combination(floatingBitsCount);
         } else {
-            const {memAddress, value} = {...extractMemoryModifications(cur)};
-            const bitValue = convertTo36BitBinary(value);
-            const afterMask = applayMask(mask, bitValue);
-            acc[memAddress] = afterMask;
+            const {memAddress, value} = {...extractMemoryModifications(line)}
+            const binaryAddress = memAddress.toString(2).padStart(36, '0');
+
+            combinations.forEach(comb => {
+                let x = 0;
+                let addresses = mask.split('').map((val, idx) => {
+                    if ( val === 'X') {
+                        return comb[x++];
+                    } 
+                    if ( val === '0') {
+                        return +binaryAddress[idx];
+                    } else {
+                        return +val
+                    }
+                }).join('');
+
+                let memLocation = parseInt(addresses, 2);
+                mem[memLocation] = value;
+            })
         }
+    })
 
-        return acc;
-    }, {})
-
-    const output = Object.values(memory)
+    const output = Object.values(mem)
         .reduce((acc, cur) => {
             return acc += cur
         }, 0);
@@ -37,9 +58,18 @@ const extractMemoryModifications = (str) => {
     const [, memAddress, value] = regex.exec(str);
 
     return {
-        memAddress,
-        value
+        memAddress: +memAddress,
+        value: +value
     }
+}
+
+const combination = (n) => {
+    const max = Math.pow(2, n);
+    const result = [];
+    for (let i = 0; i < max; i++) {
+        result.push(Number(i).toString(2).padStart(n, '0'));
+    }
+    return result;
 }
 
 const convertTo36BitBinary = (str) => {
