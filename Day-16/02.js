@@ -14,16 +14,78 @@ const callback = (err, data) => {
         })
     });
 
+    
     const validTickets = otherTickets.filter((val, idx) => {
         return !invalidNumbers[idx].length;
     })
-
+    
     // console.log(invalidNumbers.filter(val => val.length).length, validTickets.length, otherTickets.length);
-    console.log(validTicket);
+
+    const posibilities = Array.from({length: myTicket.length}, () => [])
+    const posibilitiesCounted = [];
+
+    validTickets.forEach(ticket => {
+        const couldBe = findWhatItCouldBe(rules, ticket);
+
+        for (let i = 0; i < couldBe.length; i++) {
+            posibilities[i] = posibilities[i].concat(couldBe[i])
+        }
+    });
+
+    posibilities.forEach((field, idx) => {
+        const tmp = field.reduce((acc, cur) => {
+            acc[cur] ? acc[cur]++ : acc[cur] = 1;
+            return acc; 
+        }, {})
+        posibilitiesCounted[idx] = Object.keys(tmp).filter(key => tmp[key] === 190);
+    });
+
+    const output = nameTheFields(posibilitiesCounted).reduce((acc, cur, idx) => {
+        if (/^departure/.test(cur)) {
+            acc *= myTicket[idx];
+        } else {
+            acc *= 1;
+        }
+        return acc;
+    }, 1); 
+
+    console.log(output); 
 }
 
-const findWhatItCouldBe = (rules, validTickets) => {
+const nameTheFields = (fieldsPosibilities) => {
+    let namedFields = [];
+    let tmp = '';
+    for (let i = 0; i < fieldsPosibilities.length; i++) {
+        fieldsPosibilities.forEach((posibilities, idx) => {
+            if (posibilities.length === 1) {
+                tmp = posibilities[0];
+                namedFields[idx] = posibilities[0];
+            }
+        });
 
+        fieldsPosibilities = fieldsPosibilities.map(val => {
+            return val.filter(val => val !== tmp);
+        })
+    }
+
+    return namedFields;
+}
+
+const findWhatItCouldBe = (rules, ticket) => {
+    return ticket.map(number => {
+        let couldBe = [];
+        
+        rules.forEach(rule => {
+            if (
+                (number >= rule.fRangeMin && number <= rule.fRangeMax) ||
+                (number >= rule.sRangeMin && number <= rule.sRangeMax)
+            ) {
+                couldBe.push(rule.ruleName);
+            }
+        }) 
+
+        return couldBe;
+    })
 }
 
 const expandRules = (rules) => {
