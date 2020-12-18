@@ -17,7 +17,7 @@ const callback = (err, data) => {
     const output = invalid
         .filter(val => val.length)
         .reduce((acc, cur) => {
-            return acc += +cur;
+            return acc += cur[0];
         }, 0);
 
     console.log(output);
