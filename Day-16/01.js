@@ -5,7 +5,40 @@ const callback = (err, data) => {
     if (err) throw (err);
 
     const {rules, myTicket, otherTickets} = {...parseInput(data)};
-    
+    const expandedRules = expandRules(rules);
+
+    const invalid = otherTickets.map(ticket => {
+        return ticket.filter(number => {
+            return !((number >= expandedRules.fRangeMin && number <= expandedRules.fRangeMax) ||
+                   (number >= expandedRules.sRangeMin && number <= expandedRules.sRangeMax));
+        })
+    });
+
+    const output = invalid
+        .filter(val => val.length)
+        .reduce((acc, cur) => {
+            return acc += +cur;
+        }, 0);
+
+    console.log(output);
+}
+
+const expandRules = (rules) => {
+    return rules.reduce((acc, cur, idx) => {
+        if (idx === 0 ) {
+            acc.fRangeMin = cur.fRangeMin;
+            acc.fRangeMax = cur.fRangeMax;
+            acc.sRangeMin = cur.sRangeMin;
+            acc.sRangeMax = cur.sRangeMax;
+            
+        } else {
+            acc.fRangeMin = acc.fRangeMin > cur.fRangeMin ? cur.fRangeMin : acc.fRangeMin;
+            acc.fRangeMax = acc.fRangeMax < cur.fRangeMax ? cur.fRangeMax : acc.fRangeMax;
+            acc.sRangeMin = acc.sRangeMin > cur.sRangeMin ? cur.sRangeMin : acc.sRangeMin;
+            acc.sRangeMax = acc.sRangeMax < cur.sRangeMax ? cur.sRangeMax : acc.sRangeMax;
+        }
+        return acc;  
+    }, {})
 }
 
 const parseInput = (input) => {
