@@ -7,14 +7,14 @@ const callback = (err, data) => {
     const {rules, myTicket, otherTickets} = {...parseInput(data)};
     const expandedRules = expandRules(rules);
 
-    const invalid = otherTickets.map(ticket => {
+    const invalidNumbers = otherTickets.map(ticket => {
         return ticket.filter(number => {
             return !((number >= expandedRules.fRangeMin && number <= expandedRules.fRangeMax) ||
                    (number >= expandedRules.sRangeMin && number <= expandedRules.sRangeMax));
         })
     });
 
-    const output = invalid
+    const output = invalidNumbers
         .filter(val => val.length)
         .reduce((acc, cur) => {
             return acc += cur[0];
