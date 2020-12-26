@@ -5,12 +5,30 @@ const path = require('path');
 const callback = (err, data) => {
     if (err) throw err;
 
-    const input = data.split('\n')[0];
+    const input = data.split('\n');
 
-    console.log(doTheMath(input));
+    // console.log(findExpresion(input[0]));
+    console.log(findExpresion(input[1]));
+    console.log(findExpresion(input[2]));
+    console.log(findExpresion(input[3]));
+    console.log(findExpresion(input[4]));
 
-    console.log(input);
 
+}
+
+const findExpresion = (str) => {
+    const closing = str.indexOf(')');
+
+    if (closing !== -1) {
+        const toClosing = str.slice(0, closing);
+        const opening = toClosing.lastIndexOf('(');
+        const toReplace = str.slice(opening, closing + 1);
+        const replaceMath = doTheMath(toReplace.slice(1, -1));
+        str = str.replace(toReplace, replaceMath);
+        return findExpresion(str);
+    }
+
+    return doTheMath(str);
 }
 
 const doTheMath = (str) => {
