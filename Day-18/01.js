@@ -8,12 +8,20 @@ const callback = (err, data) => {
     const input = data.split('\n');
 
     // console.log(findExpresion(input[0]));
-    console.log(findExpresion(input[1]));
-    console.log(findExpresion(input[2]));
-    console.log(findExpresion(input[3]));
-    console.log(findExpresion(input[4]));
+    // console.log(findExpresion(input[1]));
+    // console.log(findExpresion(input[2]));
+    // console.log(findExpresion(input[3]));
+    // console.log(findExpresion(input[4]));
 
+    const output = input
+        .map((expresion) => {
+            return findExpresion(expresion);
+        })
+        .reduce((acc, cur) => {
+            return acc += cur
+        }, 0)
 
+    console.log(output);
 }
 
 const findExpresion = (str) => {
@@ -58,4 +66,4 @@ const doTheMath = (str) => {
 }
 
 
-fs.readFile(path.join(__dirname, 'testInput'), 'utf-8', callback);
+fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
