@@ -12,6 +12,7 @@ const callback = (err, data) => {
     // console.log(findExpresion(input[2]));
     // console.log(findExpresion(input[3]));
     // console.log(findExpresion(input[4]));
+    // console.log(findExpresion(input[5]));
 
     const output = input
         .map((expresion) => {
@@ -42,7 +43,9 @@ const findExpresion = (str) => {
 const doTheMath = (str) => {
     const numbersAndOperation = str.split(' ');
 
-    const leftToRigth = numbersAndOperation.reduce((acc, cur) => {
+    const afterAddition = doAdditionFirst(numbersAndOperation);
+
+    const leftToRigth = afterAddition.reduce((acc, cur) => {
         if (Number.isInteger(parseInt(cur, 10))) {
             if (acc.math) {
                 if (acc.operation) {
@@ -63,6 +66,21 @@ const doTheMath = (str) => {
     }, {});
 
     return leftToRigth.math;
+}
+
+const doAdditionFirst = (arr) => {
+    const plusIndex = arr.indexOf('+');
+
+    if (plusIndex !== -1) {
+        const cutStartIndex = plusIndex -1;
+        const cutEndIndex = plusIndex + 1;
+        const replaceMath = parseInt(arr[cutStartIndex], 10) + parseInt(arr[cutEndIndex], 10);
+        arr.splice(cutStartIndex, 3, replaceMath);
+
+        return doAdditionFirst(arr);
+    }
+
+    return arr;
 }
 
 
