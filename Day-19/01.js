@@ -37,7 +37,7 @@ const getMapFromInput = (input) => {
 const reduceMap = (map) => {
     while (map.size > 1) {
         const keys = findKeysForValuesWithoutNumbers(map);
-        console.log(keys);
+        // console.log(keys);
         keys.forEach((key) => {
             let value = map.get(key);
             if (value.length > 1) {
@@ -46,7 +46,8 @@ const reduceMap = (map) => {
 
             map.delete(key);
             map.forEach((v, k) => {
-                v = v.replace(new RegExp(key, 'g'), value);
+                const toReplace = new RegExp(`\\b${key}\\b`, 'g');
+                v = v.replace(toReplace, value);
                 map.set(k, v);
             });
         });
@@ -72,4 +73,4 @@ const countMessagesMatchingRule = (rule, messages) => {
     }).length;
 };
 
-fs.readFile(path.join(__dirname, 'testInput'), 'utf-8', callback);
+fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
