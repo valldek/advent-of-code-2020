@@ -11,11 +11,11 @@ const callback = (err, data) => {
 
     const inputMessages = inputData[1].split('\n');
     const zeroMap = reduceMap(modifiedInputMap);
-    const regExp = zeroMap.get('0').replace(/\s/g, '');
+    // const regExp = zeroMap.get('0').replace(/\s/g, '');
 
-    const output = countMessagesMatchingRule(regExp, inputMessages);
+    const output = countMessagesMatchingRule(inputMessages, zeroMap);
 
-    console.log(regExp);
+    // console.log(regExp);
     console.log(output);
 };
 
@@ -76,6 +76,8 @@ const reduceMap = (map) => {
             });
         });
     }
+    map.set('31', rule31);
+    map.set('42', rule42);
     return map;
 };
 
@@ -90,11 +92,25 @@ const findKeysForValuesWithoutNumbers = (map) => {
     return keys;
 };
 
-const countMessagesMatchingRule = (rule, messages) => {
-    const ruleRegExp = new RegExp(`^${rule}$`);
-    return messages.filter((value) => {
-        return ruleRegExp.test(value);
-    }).length;
+const countMessagesMatchingRule = (messages, map) => {
+    const rule31 = map.get('31').replace(/\s/g, '');
+    const rule42 = map.get('42').replace(/\s/g, '');
+
+    const ruleRegExp = new RegExp(`^(?<g42>(${rule42})+)(?<g31>(${rule31})+)$`);
+
+    return messages.filter((message) => {
+        const matches = ruleRegExp.exec(message);
+        if (matches) {
+            const matches42 = matches.groups.g42.match(new RegExp(rule42, 'g')).length;
+            const matches31 = matches.groups.g31.match(new RegExp(rule31, 'g')).length;
+
+            if (matches42 > matches31) {
+                return true;
+            }
+        }
+        return false;
+    }).length
+
 };
 
 const modifyMap = (map) => {
@@ -105,4 +121,4 @@ const modifyMap = (map) => {
     return modifiedMap;
 };
 
-fs.readFile(path.join(__dirname, 'modifiedTestInput'), 'utf-8', callback);
+fs.readFile(path.join(__dirname, 'input'), 'utf-8', callback);
