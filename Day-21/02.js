@@ -7,22 +7,19 @@ const callback = (err, data) => {
     const parsedInput = parseInput(data);
     const possible = getAllergentPossibleIngredients(parsedInput);
 
-    console.log(parsedInput);
-
-    // console.log(getAllIngredients(parsedInput));
-
     const withAllergent = getAllIngredientsWithAllergent(possible);
 
-    console.log(withAllergent);
+    // const output = getAllIngredients(parsedInput)
+    //     .ingredients
+    //     .filter((ingredient) => {
+    //         return !withAllergent.has(ingredient)
+    //     });
 
-    const output = getAllIngredients(parsedInput)
-        .ingredients
-        .filter((ingredient) => {
-            return !withAllergent.has(ingredient)
-        });
+    // console.log(possible);
 
-    console.log(output.length);
+    const output = getCanonicalDangerousIngredientList(possible);
 
+    console.log(output);
 }
 
 const parseInput = (input) => {
@@ -72,6 +69,30 @@ const getAllIngredients = (input) => {
         uniqueIngredients: new Set(ingredients),
         ingredients
     }
+}
+
+const getCanonicalDangerousIngredientList = (possible) => {
+    const allergentList = {};
+    let lastAdded = '';
+    while (Object.keys(possible).length) {
+        for (const allIng in possible) {
+            if (possible[allIng].length === 1) {
+                allergentList[allIng] = possible[allIng];
+                lastAdded = possible[allIng][0];
+                delete possible[allIng];
+                break;
+            }
+        }
+
+        for (const allIng in possible) {
+            possible[allIng] = possible[allIng].filter(ing => ing !== lastAdded);
+        }
+    }
+    console.log(allergentList);
+
+    const sortedKeys = Object.keys(allergentList).sort();
+
+    return sortedKeys.map(key => allergentList[key]).flat().join(',');
 }
 
 
